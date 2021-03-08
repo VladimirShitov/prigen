@@ -3,6 +3,12 @@ import tempfile
 from Bio.Blast.Applications import NcbiblastnCommandline as BlastN
 
 
+def gc_percentage(sequence: str) -> float:
+    """Calculate GC-content of a nucleotide sequence"""
+    sequence = sequence.upper()
+    return (sequence.count("G") + sequence.count("C")) / len(sequence)
+
+
 def parse_blast_result(result: str) -> set[str]:
     """Parse BLAST TSV result (format #6). Return IDs of found queries
 
