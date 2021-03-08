@@ -11,19 +11,41 @@ from prigen.validators import (
 
 
 class PrimersGenerator:
+    """Generator of primers with desired properties
+
+    Attributes
+    ----------
+    number_of_primers : int
+        Number of nucleotide sequences to be generated
+    length : int
+        Length of the sequences
+    gc_percentage : float
+        Number between 0 and 1, a percent of G and C letters in primer
+    min_temperature : float
+        Minimal acceptable melting temperature
+    max_temperature : float
+        Maximal acceptable melting temperature
+
+    Raises
+    ------
+    ValueError
+        If `min_temperature` > `max_temperature`, if `gc_percentage` is not between 0 and 1,
+        if `length` <= 0 or if `number_of_primers` <= 0
+    """
+
     def __init__(
             self,
             length: int,
             gc_percentage: float,
             number_of_primers: int = 20,
-            temperature_from: float = -999,
-            temperature_to: float = 999
+            min_temperature: float = -999,
+            max_temperature: float = 999
     ):
         self.length = length
         self.gc_percentage = gc_percentage
         self.number_of_primers = number_of_primers
-        self.temperature_from = temperature_from
-        self.temperature_to = temperature_to
+        self.min_temperature = min_temperature
+        self.max_temperature = max_temperature
 
         self._check_params()
 
@@ -31,7 +53,7 @@ class PrimersGenerator:
         check_length(self.length)
         check_gc_percentage(self.gc_percentage)
         check_number_of_primers(self.number_of_primers)
-        check_temperature_bounds(self.temperature_from, self.temperature_to)
+        check_temperature_bounds(self.min_temperature, self.max_temperature)
 
     @staticmethod
     def generate_primer(length: int, gc_percentage: float) -> str:
@@ -77,29 +99,11 @@ class PrimersGenerator:
 
         return "".join(sequence)
 
-    @staticmethod
-    def generate_primers(
-            number_of_primers: int,
-            length: int,
-            gc_percentage: float,
-            min_temperature: float,
-            max_temperature: float,
-            max_iterations: int = 10000
-    ) -> dict[str, float]:
+    def generate_primers(self, max_iterations: int = 10000) -> dict[str, float]:
         """Generate nucleotide sequences with given GC-content and melting temperature
 
         Parameters
         ----------
-        number_of_primers : int
-            Number of nucleotide sequences to be generated
-        length : int
-            Length of the sequences
-        gc_percentage : float
-            Number between 0 and 1, a percent of G and C letters in primer
-        min_temperature : float
-            Minimal acceptable melting temperature
-        max_temperature : float
-            Maximal acceptable melting temperature
         max_iterations : int
             Maximum number of attempts to generate primer with given properties
 
@@ -111,36 +115,29 @@ class PrimersGenerator:
 
         Raises
         ------
-        ValueError
-            If `min_temperature` > `max_temperature`, `gc_percentage` is not between 0 and 1, or
-            if `length` < 0
         NoPrimersGeneratedError
             If `max_iterations` attempts were made, but no primers with desired properties
             were generated
         """
         # Give at least 100 attempts to generate each primer
-        max_iterations = max(max_iterations, number_of_primers * 100)
+        max_iterations = max(max_iterations, self.number_of_primers * 100)
 
         iteration = 0
-
-        check_temperature_bounds(min_temperature, max_temperature)
-        check_gc_percentage(gc_percentage)
-        check_length(length)
 
         primers: dict[str, float] = {}
         temperatures = np.zeros(max_iterations, dtype="float")
 
-        while len(primers) < number_of_primers and iteration < max_iterations:
-            primer = PrimersGenerator.generate_primer(length, gc_percentage)
+        while len(primers) < self.number_of_primers and iteration < max_iterations:
+            iteration += 1
+
+            primer = self.generate_primer(self.length, self.gc_percentage)
 
             if primer not in primers:
                 melting_temperature = MT.Tm_NN(primer)
                 temperatures[iteration] = melting_temperature
 
-                if min_temperature <= melting_temperature <= max_temperature:
+                if self.min_temperature <= melting_temperature <= self.max_temperature:
                     primers[primer] = melting_temperature
-
-            iteration += 1
 
         if iteration == max_iterations and not primers:
             avg_temperature = round(np.mean(temperatures), 2)
@@ -153,6 +150,3 @@ class PrimersGenerator:
             raise NoPrimersGeneratedError(error_message)
 
         return primers
-
-    def generate(self):
-        pass
