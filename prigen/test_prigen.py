@@ -55,3 +55,21 @@ def test_primers_generator_with_any_temperature():
                 assert all(
                     (gc_content(primer) - gc_percentage < 1/length) for primer in primers
                 )
+
+
+def test_primers_generator_with_temperature_bounds():
+    for gc_percentage in np.linspace(0, 1, 20):
+        for min_temperature in np.linspace(5, 60):
+            max_temperature = min_temperature + 5
+
+            generator = PrimersGenerator(
+                length=20,
+                number_of_primers=20,
+                gc_percentage=gc_percentage,
+                min_temperature=min_temperature,
+                max_temperature=max_temperature
+            )
+            primers = generator.generate_primers()
+
+            for temperature in primers.values():
+                assert min_temperature <= temperature <= max_temperature
