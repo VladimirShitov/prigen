@@ -39,22 +39,42 @@ def test_primers_generator_with_wrong_gc_percentage():
             PrimersGenerator(length=1, gc_percentage=percent)
 
 
-def test_primers_generator_with_any_temperature():
+def test_number_of_generated_primers():
     for n_primers in range(1, 20):
-        for length in range(4, 20):
-            for gc_percentage in np.linspace(0, 1, 20):
-                generator = PrimersGenerator(
-                    length=length,
-                    number_of_primers=n_primers,
-                    gc_percentage=gc_percentage
-                )
-                primers = generator.generate_primers()
+        generator = PrimersGenerator(
+            length=20,
+            number_of_primers=n_primers,
+            gc_percentage=.5
+        )
+        primers = generator.generate_primers()
 
-                assert len(primers) <= n_primers
-                assert all(len(primer) == length for primer in primers)
-                assert all(
-                    (gc_content(primer) - gc_percentage < 1/length) for primer in primers
-                )
+        assert len(primers) <= n_primers
+
+
+def test_length_of_generated_primers():
+    for length in range(4, 20):
+        generator = PrimersGenerator(
+            length=length,
+            number_of_primers=20,
+            gc_percentage=.5
+        )
+        primers = generator.generate_primers()
+
+        assert all(len(primer) == length for primer in primers)
+
+
+def test_primers_generator_with_any_temperature():
+    for length in range(2, 50):
+        for gc_percentage in np.linspace(0, 1, 30):
+            generator = PrimersGenerator(
+                length=length,
+                number_of_primers=20,
+                gc_percentage=gc_percentage
+            )
+            primers = generator.generate_primers()
+
+            for primer in primers:
+                assert abs(gc_content(primer) - gc_percentage) < 1/length
 
 
 def test_primers_generator_with_temperature_bounds():
