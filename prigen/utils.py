@@ -29,3 +29,23 @@ def parse_blast_result(result: str) -> set[str]:
         found_queries.add(row.split("\t")[0])
 
     return found_queries
+
+
+def remove_keys_from_dict(dictionary: dict, excess_keys) -> dict:
+    """Remove `excess_keys` from `dictionary`
+
+    Parameters
+    ----------
+    dictionary: dict
+        A dictionary from that you want to filter out keys
+    excess_keys: iterable
+        Any iterable object (e.g list or set) with keys that you want to remove from `dictionary`
+
+    Returns
+    -------
+    `dictionary` without keys that were in `excess_keys`
+    """
+    for key in excess_keys:
+        dictionary.pop(key, None)
+
+    return dictionary
