@@ -3,7 +3,7 @@ import tempfile
 from Bio.Blast.Applications import NcbiblastnCommandline as BlastN
 
 
-def gc_percentage(sequence: str) -> float:
+def gc_content(sequence: str) -> float:
     """Calculate GC-content of a nucleotide sequence"""
     sequence = sequence.upper()
     return (sequence.count("G") + sequence.count("C")) / len(sequence)
