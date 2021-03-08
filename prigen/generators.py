@@ -1,3 +1,6 @@
+from prigen.validators import check_length
+
+
 class PrimersGenerator:
     def __init__(
             self,
@@ -16,8 +19,7 @@ class PrimersGenerator:
         self._check_params()
 
     def _check_params(self):
-        if self.length < 0:
-            raise ValueError("Length must be greater than 0")
+        check_length(self.length)
 
         if self.gc_percentage < 0 or self.gc_percentage > 1:
             raise ValueError("GC-percentage must be a number between 0 and 1")
