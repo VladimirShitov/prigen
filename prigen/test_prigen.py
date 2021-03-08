@@ -17,3 +17,11 @@ def test_primers_generator_with_wrong_number():
 
     with pytest.raises(ValueError):
         PrimersGenerator(length=1, gc_percentage=.5, number_of_primers=-999)
+
+
+def test_primers_generator_with_wrong_temperature_bounds():
+    with pytest.raises(ValueError):
+        PrimersGenerator(length=1, gc_percentage=.5, min_temperature=5, max_temperature=3)
+
+    with pytest.raises(ValueError):
+        PrimersGenerator(length=1, gc_percentage=.5, min_temperature=5, max_temperature=5)
