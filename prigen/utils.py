@@ -1,3 +1,8 @@
+import tempfile
+
+from Bio.Blast.Applications import NcbiblastnCommandline as BlastN
+
+
 def parse_blast_result(result: str) -> set[str]:
     """Parse BLAST TSV result (format #6). Return IDs of found queries
 
@@ -49,3 +54,53 @@ def remove_keys_from_dict(dictionary: dict, excess_keys) -> dict:
         dictionary.pop(key, None)
 
     return dictionary
+
+
+def filter_primers_by_blast(
+        primers: dict[str, float], blast_db_path=None, remote: bool = False
+) -> dict[str, float]:
+    """BLAST primers and remove the ones that were found in database
+
+    In the current version, 0.001 e-value threshold is set, and no other statistics are
+    supported. If the sequence is found with any score, it will be filtered out
+
+    Parameters
+    ----------
+    primers: dict[str, float]
+        Dictionary, where keys are nucleotide sequences, and values are melting temperatures
+    blast_db_path:
+        Path to the directory with blast datablase. Ignored if `remote` is set to True
+    remote: bool = False
+        If True, BLAST search will be done in remote database. If False, a local database
+        in `blast_db_path` will be used
+
+    Returns
+    -------
+    filtered_primers: dict[str, float]
+        `primers` without keys that were found in blast database
+    """
+    with tempfile.NamedTemporaryFile("w") as f:
+        for primer in primers.keys():
+            f.write(f">{primer}\n")
+            f.write(f"{primer}\n")
+
+        if remote:
+            cline = BlastN(
+                query=f.name,
+                evalue=0.001,
+                outfmt=6,  # TSV
+                remote=True,
+                db="nt"
+            )
+        else:
+            cline = BlastN(
+                query=f.name,
+                evalue=0.001,
+                outfmt=6,  # TSV
+                db=blast_db_path
+            )
+
+        result = cline()
+        found_primers: set[str] = parse_blast_result(result[0])
+
+        return remove_keys_from_dict(primers, found_primers)
