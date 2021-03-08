@@ -1,4 +1,9 @@
-from prigen.validators import check_length, check_gc_percentage, check_number_of_primers
+from prigen.validators import (
+    check_length,
+    check_gc_percentage,
+    check_number_of_primers,
+    check_temperature_bounds
+)
 
 
 class PrimersGenerator:
@@ -20,15 +25,9 @@ class PrimersGenerator:
 
     def _check_params(self):
         check_length(self.length)
-
         check_gc_percentage(self.gc_percentage)
-
         check_number_of_primers(self.number_of_primers)
-
-        if self.temperature_from >= self.temperature_to:
-            raise ValueError(
-                "The lower bound of melting temperature must be less than the upper bound"
-            )
+        check_temperature_bounds(self.temperature_from, self.temperature_to)
 
     def generate(self):
         pass
