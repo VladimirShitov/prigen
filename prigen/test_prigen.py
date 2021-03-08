@@ -2,6 +2,7 @@ import numpy as np
 import pytest
 
 from prigen.generators import PrimersGenerator
+from prigen.utils import gc_content
 
 
 def test_primers_generator_with_wrong_length():
@@ -39,12 +40,18 @@ def test_primers_generator_with_wrong_gc_percentage():
 
 
 def test_primers_generator_with_any_temperature():
-    for n_primers in range(1, 30):
-        for length in range(4, 30):
-            generator = PrimersGenerator(
-                length=length, number_of_primers=n_primers, gc_percentage=.5
-            )
-            primers = generator.generate_primers()
+    for n_primers in range(1, 20):
+        for length in range(4, 20):
+            for gc_percentage in np.linspace(0, 1, 20):
+                generator = PrimersGenerator(
+                    length=length,
+                    number_of_primers=n_primers,
+                    gc_percentage=gc_percentage
+                )
+                primers = generator.generate_primers()
 
-            assert len(primers) == n_primers
-            assert all(len(primer) == length for primer in primers)
+                assert len(primers) <= n_primers
+                assert all(len(primer) == length for primer in primers)
+                assert all(
+                    (gc_content(primer) - gc_percentage < 1/length) for primer in primers
+                )
