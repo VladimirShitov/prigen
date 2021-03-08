@@ -58,18 +58,17 @@ def test_primers_generator_with_any_temperature():
 
 
 def test_primers_generator_with_temperature_bounds():
+    min_temperature, max_temperature = 30, 80
+
     for gc_percentage in np.linspace(0, 1, 20):
-        for min_temperature in np.linspace(5, 60):
-            max_temperature = min_temperature + 5
+        generator = PrimersGenerator(
+            length=20,
+            number_of_primers=20,
+            gc_percentage=gc_percentage,
+            min_temperature=min_temperature,
+            max_temperature=max_temperature
+        )
+        primers = generator.generate_primers()
 
-            generator = PrimersGenerator(
-                length=20,
-                number_of_primers=20,
-                gc_percentage=gc_percentage,
-                min_temperature=min_temperature,
-                max_temperature=max_temperature
-            )
-            primers = generator.generate_primers()
-
-            for temperature in primers.values():
-                assert min_temperature <= temperature <= max_temperature
+        for temperature in primers.values():
+            assert min_temperature <= temperature <= max_temperature
