@@ -1,0 +1,2 @@
+class NoPrimersGeneratedError(Exception):
+    pass
