@@ -66,6 +66,9 @@ class PrimersGenerator:
         gc_percentage: float
             GC-content of the nucleotide sequence. Must be a number between 0 and 1
         """
+        check_length(length)
+        check_gc_percentage(gc_percentage)
+
         indexes = np.arange(length)
         np.random.shuffle(indexes)
 
