@@ -1,4 +1,4 @@
-from prigen.validators import check_length, check_gc_percentage
+from prigen.validators import check_length, check_gc_percentage, check_number_of_primers
 
 
 class PrimersGenerator:
@@ -23,8 +23,7 @@ class PrimersGenerator:
 
         check_gc_percentage(self.gc_percentage)
 
-        if self.number_of_primers < 0:
-            raise ValueError("Number of primers must be greater than 0")
+        check_number_of_primers(self.number_of_primers)
 
         if self.temperature_from >= self.temperature_to:
             raise ValueError(
