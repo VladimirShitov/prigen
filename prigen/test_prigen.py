@@ -2,7 +2,12 @@ import numpy as np
 import pytest
 
 from prigen.generators import PrimersGenerator
-from prigen.utils import gc_content, parse_blast_result, remove_keys_from_dict
+from prigen.utils import (
+    filter_primers_by_blast,
+    gc_content,
+    parse_blast_result,
+    remove_keys_from_dict
+)
 
 
 @pytest.fixture
@@ -132,3 +137,13 @@ def test_remove_keys_from_dict():
     assert remove_keys_from_dict(d, ["a", "not_existing"]) == {"b": 2, "c": 3}
     assert remove_keys_from_dict(d, d.keys()) == {}
     assert remove_keys_from_dict({}, ["a", "b", "c"]) == {}
+
+
+def test_filter_primers_by_blast():
+    # Nucleotide sequences from human genome
+    primers = {
+        "TTTGGAACTCTGCAGGTTCTATTTGCTTTTTCCCAGATGA": 63.99,
+        "GGTTTGCCCGCCAGGCCGAGGAGGACCGTCGCAATCTGAG": 74.74
+    }
+
+    assert filter_primers_by_blast(primers, remote=True) == {}
