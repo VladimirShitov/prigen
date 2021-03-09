@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 
 from prigen.generators import PrimersGenerator
-from prigen.utils import gc_content, parse_blast_result
+from prigen.utils import gc_content, parse_blast_result, remove_keys_from_dict
 
 
 @pytest.fixture
@@ -122,3 +122,12 @@ def test_parse_blast_result(blast_result):
 
 def test_parse_empty_blast_result():
     assert parse_blast_result("") == set()
+
+
+def test_remove_keys_from_dict():
+    d = {"a": 1, "b": 2, "c": 3}
+
+    assert remove_keys_from_dict(d, ["b"]) == {"a": 1, "c": 3}
+    assert remove_keys_from_dict(d, ["not_existing"]) == d
+    assert remove_keys_from_dict(d, ["a", "not_existing"]) == {"b": 2, "c": 3}
+    assert remove_keys_from_dict(d, d.keys()) == {}
