@@ -36,6 +36,9 @@ def parse_blast_result(result: str) -> set[str]:
 
     found_queries = set()
 
+    if not result:
+        return found_queries
+
     for row in result.strip().split("\n"):
         found_queries.add(row.split("\t")[0])
 
