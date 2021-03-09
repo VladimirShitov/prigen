@@ -131,3 +131,4 @@ def test_remove_keys_from_dict():
     assert remove_keys_from_dict(d, ["not_existing"]) == d
     assert remove_keys_from_dict(d, ["a", "not_existing"]) == {"b": 2, "c": 3}
     assert remove_keys_from_dict(d, d.keys()) == {}
+    assert remove_keys_from_dict({}, ["a", "b", "c"]) == {}
