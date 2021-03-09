@@ -92,3 +92,20 @@ def test_primers_generator_with_temperature_bounds():
 
         for temperature in primers.values():
             assert min_temperature <= temperature <= max_temperature
+
+
+def test_gc_content():
+    assert gc_content("A") == 0
+
+    length = 20
+
+    for n_g in range(10):
+        for n_c in range(10):
+            primer = "G" * n_g + "C" * n_c + "A" * (length - n_c - n_g)
+
+            assert gc_content(primer) == (n_c + n_g) / length
+
+    primer = "GCGCGCATGCAGTACGA"
+
+    assert gc_content(primer) == gc_content(primer.lower())
+
