@@ -118,3 +118,7 @@ def test_gc_content():
 
 def test_parse_blast_result(blast_result):
     assert parse_blast_result(blast_result) == {"gene1", "gene2"}
+
+
+def test_parse_empty_blast_result():
+    assert parse_blast_result("") == set()
