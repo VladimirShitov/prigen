@@ -2,7 +2,13 @@ import numpy as np
 import pytest
 
 from prigen.generators import PrimersGenerator
-from prigen.utils import gc_content
+from prigen.utils import gc_content, parse_blast_result
+
+
+@pytest.fixture
+def blast_result():
+    return "gene1\tchr7\t100.000\t96\t0\t0\t1\t96\t5529033\t5528938\t4.22e-43\t178\n" + \
+           "gene2\tchr17\t100.000\t111\t0\t0\t1\t111\t7686764\t7686654\t2.36e-51\t206\n"
 
 
 def test_primers_generator_with_wrong_length():
@@ -109,3 +115,6 @@ def test_gc_content():
 
     assert gc_content(primer) == gc_content(primer.lower())
 
+
+def test_parse_blast_result(blast_result):
+    assert parse_blast_result(blast_result) == {"gene1", "gene2"}
