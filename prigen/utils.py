@@ -59,6 +59,8 @@ def remove_keys_from_dict(dictionary: dict, excess_keys) -> dict:
     -------
     `dictionary` without keys that were in `excess_keys`
     """
+    dictionary = dictionary.copy()
+
     for key in excess_keys:
         dictionary.pop(key, None)
 
