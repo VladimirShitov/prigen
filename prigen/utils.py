@@ -95,6 +95,8 @@ def filter_primers_by_blast(
             f.write(f">{primer}\n")
             f.write(f"{primer}\n")
 
+        f.seek(0)
+
         if remote:
             cline = BlastN(
                 query=f.name,
