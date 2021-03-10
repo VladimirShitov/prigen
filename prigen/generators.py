@@ -135,7 +135,7 @@ class PrimersGenerator:
 
             if primer not in primers:
                 melting_temperature = MT.Tm_NN(primer)
-                temperatures[iteration] = melting_temperature
+                temperatures[iteration] = round(melting_temperature, 2)
 
                 if self.min_temperature <= melting_temperature <= self.max_temperature:
                     primers[primer] = melting_temperature
