@@ -102,6 +102,20 @@ class PrimersGenerator:
 
         return "".join(sequence)
 
+    @staticmethod
+    def melting_temperature(primer: str) -> float:
+        """Calculate a melting temperature of the nucleotide sequence
+
+        Returns
+        -------
+        Calculated temperature or 0 if it can't be calculated
+        """
+        mt = MT.Tm_NN(primer)
+        if mt < 0:
+            mt = -1
+
+        return round(mt, 2)
+
     def generate_primers(self, max_iterations: int = 10000) -> dict[str, float]:
         """Generate nucleotide sequences with given GC-content and melting temperature
 
@@ -134,11 +148,11 @@ class PrimersGenerator:
             primer = self.generate_primer(self.length, self.gc_percentage)
 
             if primer not in primers:
-                melting_temperature = MT.Tm_NN(primer)
-                temperatures[iteration] = round(melting_temperature, 2)
+                temperature = self.melting_temperature(primer)
+                temperatures[iteration] = temperature
 
-                if self.min_temperature <= melting_temperature <= self.max_temperature:
-                    primers[primer] = melting_temperature
+                if self.min_temperature <= temperature <= self.max_temperature:
+                    primers[primer] = temperature
 
             iteration += 1
 
