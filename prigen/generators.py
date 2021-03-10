@@ -131,8 +131,6 @@ class PrimersGenerator:
         temperatures = np.zeros(max_iterations, dtype="float")
 
         while len(primers) < self.number_of_primers and iteration < max_iterations:
-            iteration += 1
-
             primer = self.generate_primer(self.length, self.gc_percentage)
 
             if primer not in primers:
@@ -141,6 +139,8 @@ class PrimersGenerator:
 
                 if self.min_temperature <= melting_temperature <= self.max_temperature:
                     primers[primer] = melting_temperature
+
+            iteration += 1
 
         if iteration == max_iterations and not primers:
             avg_temperature = round(np.mean(temperatures), 2)
