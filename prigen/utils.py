@@ -97,19 +97,23 @@ def filter_primers_by_blast(
 
         f.seek(0)
 
+        blast_params = {
+            "query": f.name,
+            "outfmt": 6,  # TSV
+            "task": "blastn-short",
+            "max_target_seqs": 5,
+            "remote": remote
+        }
+
         if remote:
             cline = BlastN(
-                query=f.name,
-                evalue=0.001,
-                outfmt=6,  # TSV
-                remote=True,
-                db="nt"
+                **blast_params,
+                db="nt",
             )
         else:
             cline = BlastN(
-                query=f.name,
-                evalue=0.001,
-                outfmt=6,  # TSV
+                **blast_params,
+                num_threads=7,
                 db=blast_db_path
             )
 
